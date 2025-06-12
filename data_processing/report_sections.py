@@ -1137,7 +1137,7 @@ def _generar_tabla_bitacora_top_ads(df_daily_agg, bitacora_periods_list, active_
     log_func("  ---")
 
 
-def _generar_tabla_bitacora_top_adsets(df_daily_agg, bitacora_periods_list, active_days_total_adset_df, log_func, detected_currency, top_n=10):
+def _generar_tabla_bitacora_top_adsets(df_daily_agg, bitacora_periods_list, active_days_total_adset_df, log_func, detected_currency, top_n=20):
     """Genera tablas por semana con los Top AdSets ordenados por ROAS y alcance."""
     group_cols = ['Campaign', 'AdSet']
     if df_daily_agg is None or df_daily_agg.empty or 'date' not in df_daily_agg.columns:
@@ -1246,16 +1246,24 @@ def _generar_tabla_bitacora_top_adsets(df_daily_agg, bitacora_periods_list, acti
                 'Campaña': camp,
                 'AdSet': adset,
                 'Días Act': dias_act,
+                'Públicos Incluidos': _clean_audience_string(key_row.get('Públicos In', '-')),
+                'Públicos Excluidos': _clean_audience_string(key_row.get('Públicos Ex', '-')),
             }
             row.update(metrics)
             table_rows.append(row)
 
         if table_rows:
             df_display = pd.DataFrame(table_rows)
-            column_order = ['Campaña','AdSet','Días Act'] + metric_labels
+            column_order = ['Campaña', 'AdSet', 'Días Act'] + metric_labels + ['Públicos Incluidos', 'Públicos Excluidos']
             df_display = df_display[[c for c in column_order if c in df_display.columns]]
-            num_cols = [c for c in df_display.columns if c not in ['Campaña','AdSet']]
-            _format_dataframe_to_markdown(df_display, f"Top {top_n} AdSets Bitácora - {label}", log_func, numeric_cols_for_alignment=num_cols)
+            num_cols = [c for c in df_display.columns if c not in ['Campaña', 'AdSet', 'Públicos Incluidos', 'Públicos Excluidos']]
+            _format_dataframe_to_markdown(
+                df_display,
+                f"Top {top_n} AdSets Bitácora - {label}",
+                log_func,
+                numeric_cols_for_alignment=num_cols,
+                max_col_width=45,
+            )
             any_table = True
 
     if not any_table:
