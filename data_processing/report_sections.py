@@ -1254,10 +1254,16 @@ def _generar_tabla_bitacora_top_adsets(df_daily_agg, bitacora_periods_list, acti
 
         if table_rows:
             df_display = pd.DataFrame(table_rows)
-            column_order = ['Campaña','AdSet','Días Act','Públicos Incluidos','Públicos Excluidos'] + metric_labels
+            column_order = ['Campaña', 'AdSet', 'Días Act'] + metric_labels + ['Públicos Incluidos', 'Públicos Excluidos']
             df_display = df_display[[c for c in column_order if c in df_display.columns]]
-            num_cols = [c for c in df_display.columns if c not in ['Campaña','AdSet','Públicos Incluidos','Públicos Excluidos']]
-            _format_dataframe_to_markdown(df_display, f"Top {top_n} AdSets Bitácora - {label}", log_func, numeric_cols_for_alignment=num_cols)
+            num_cols = [c for c in df_display.columns if c not in ['Campaña', 'AdSet', 'Públicos Incluidos', 'Públicos Excluidos']]
+            _format_dataframe_to_markdown(
+                df_display,
+                f"Top {top_n} AdSets Bitácora - {label}",
+                log_func,
+                numeric_cols_for_alignment=num_cols,
+                max_col_width=45,
+            )
             any_table = True
 
     if not any_table:
